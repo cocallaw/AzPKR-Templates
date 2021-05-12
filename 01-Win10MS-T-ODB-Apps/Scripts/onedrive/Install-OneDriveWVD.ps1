@@ -4,14 +4,6 @@ Write-Host "Creating Temp ODB Working Directory"
 $otd = "C:\odbtemp"
 New-Item -Path $otd -ItemType Directory -Force
 
-Write-Host "Setting OneDrive AllUsersInstall Registry Key"
-$key = "HKEY_LOCAL_MACHINE\Microsoft\OneDrive"
-
-foreach ($k in $key) {
-    If ( -Not ( Test-Path "Registry::$k")) { New-Item -Path "Registry::$k" -ItemType RegistryKey -Force }
-    Set-ItemProperty -path "Registry::$k" -Name "AllUsersInstall" -Type "DWord" -Value "00000001"
-}
-
 Write-Host "Downloading latest OnedDrive Client"
 $odburi = "https://aka.ms/OneDriveWVD-Installer"
 try {
@@ -22,7 +14,7 @@ catch {
 }
 
 Write-Host "Installing OneDrive in Per-Machine Mode"
-Start-Process "$otd\OneDriveSetup.exe" -ArgumentList "/allusers" -Wait 
+Start-Process "$otd\OneDriveSetup.exe" -ArgumentList "/allusers"
 
 Write-Host "Setting OneDrive to start at Sign-in for all users"
 REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v OneDrive /t REG_SZ /d "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe /background" /f
