@@ -42,7 +42,7 @@ catch {
 Write-Host "Installing C++"
 Start-Process -FilePath "$ttd\VC_redist.x64.exe" -ArgumentList "/install /quiet /norestart" -Wait -NoNewWindow
 Write-Host "Installing WebRTC"
-Start-Process -FilePath "$ttd\MsRdcWebRTCSvc_x64.msi" -ArgumentList "/quiet /norestart" -Wait -NoNewWindow
+Start-Process "$ttd\MsRdcWebRTCSvc_x64.msi" -ArgumentList "/quiet" -Wait
 Write-Host "Installing Teams Client"
 msiexec /i "$ttd\Teams_windows_x64.msi" ALLUSER=1
 
