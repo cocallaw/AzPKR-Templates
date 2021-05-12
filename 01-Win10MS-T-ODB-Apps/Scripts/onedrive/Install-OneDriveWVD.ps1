@@ -16,6 +16,11 @@ catch {
 Write-Host "Installing OneDrive in Per-Machine Mode"
 Start-Process "$otd\OneDriveSetup.exe" -ArgumentList "/allusers"
 
+Write-Host "Waiting on OneDrive Install 90 Seconds"
+Start-Sleep -Seconds 60
+Write-Host "Waiting on OneDrive Install 30 Seconds Remaining"
+Start-Sleep -Seconds 60
+
 Write-Host "Setting OneDrive to start at Sign-in for all users"
 REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v OneDrive /t REG_SZ /d "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe /background" /f
 
