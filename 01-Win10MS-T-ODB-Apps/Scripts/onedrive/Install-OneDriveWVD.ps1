@@ -22,7 +22,7 @@ catch {
 }
 
 Write-Host "Installing OneDrive in Per-Machine Mode"
-& "$otd\OneDriveSetup.exe" /allusers
+Start-Process "$otd\OneDriveSetup.exe" -ArgumentList "/allusers" -Wait 
 
 Write-Host "Setting OneDrive to start at Sign-in for all users"
 REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v OneDrive /t REG_SZ /d "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe /background" /f
