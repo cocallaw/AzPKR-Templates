@@ -1,6 +1,6 @@
 Write-Host "Starting Teams Install for WVD"
 
-Write-Host "Creating Temp Teams Working Direcotry"
+Write-Host "Creating Temp Teams Working Directory"
 $ttd = "C:\teamstemp"
 New-Item -Path $ttd -ItemType Directory -Force
 
@@ -33,17 +33,18 @@ catch {
 Write-Host "Downloading latest Microsoft Teams Client"
 $tmsuri = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
 try {
-    Start-BitsTransfer -Source $tmsuri -Destination "$ttd\Teams_windows_x64.exe"
+    Start-BitsTransfer -Source $tmsuri -Destination "$ttd\Teams_windows_x64.msi"
 }
 catch {
-    Invoke-WebRequest -Uri $tmsuri -OutFile "$ttd\Teams_windows_x64.exe"
+    Invoke-WebRequest -Uri $tmsuri -OutFile "$ttd\Teams_windows_x64.msi"
 }
 
 Write-Host "Installing C++"
 Start-Process -FilePath "$ttd\VC_redist.x64.exe" -ArgumentList "/install /quiet /norestart" -Wait -NoNewWindow
 Write-Host "Installing WebRTC"
 Start-Process -FilePath "$ttd\MsRdcWebRTCSvc_x64.msi" -ArgumentList "/quiet /norestart" -Wait -NoNewWindow
-msiexec /i "$ttd\Teams_windows_x64.exe" ALLUSER=1
+Write-Host "Installing Teams Client"
+msiexec /i "$ttd\Teams_windows_x64.msi" ALLUSER=1
 
 Start-Sleep -Seconds 2
 
