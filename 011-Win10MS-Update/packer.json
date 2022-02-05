@@ -1,0 +1,66 @@
+{
+    "variables": {
+        "TenantId": "",
+        "SubscriptionId": "a05718c6-2d39-4a7d-821b-15b74420ae00",
+        "ImageDestRG": "CLCID-Packer-Test",
+        "TempResourceGroup": "",
+        "VirtualNetwork": "",
+        "VirtualNetworkRG": "",
+        "Subnet": "",
+        "Location": "EastUS",
+        "VMSize": "Standard_D2_v2",
+        "StorageAccountInstallersName": "",
+        "StorageAccountInstallersKey": "",
+        "StorageAccountInstallersPath": "",
+        "ImagePublisher": "MicrosoftWindowsDesktop",
+        "ImageOffer": "office-365",
+        "ImageSku": "20h2-evd-o365pp"
+    },
+    "builders": [
+        {
+            "type": "azure-arm",
+            "client_id": "",
+            "client_secret": "",
+            "tenant_id": "",
+            "subscription_id": "{{user `SubscriptionId`}}",
+
+            "managed_image_resource_group_name": "{{user `ImageDestRG`}}",
+            "managed_image_name": "myPackerImage",
+
+            "os_type": "Windows",
+            "image_publisher": "{{user `ImagePublisher`}}",
+            "image_offer": "{{user `ImageOffer`}}",
+            "image_sku": "{{user `ImageSku`}}",
+
+            "communicator": "winrm",
+            "winrm_use_ssl": true,
+            "winrm_insecure": true,
+            "winrm_timeout": "5m",
+            "winrm_username": "packer",
+            "azure_tags": {
+                "dept": "WVD Labs",
+                "task": "Image deployment"
+            },
+            "vm_size": "{{user `VMSize`}}",
+            "location": "{{user `Location`}}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "powershell",
+            "inline": [
+                "Add-WindowsFeature Web-Server",
+                "while ((Get-Service RdAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+                "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+                "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+            ]
+        },
+        {
+            "type": "powershell",
+            "inline": [
+              "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+              "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+            ]
+          }
+    ]
+}
